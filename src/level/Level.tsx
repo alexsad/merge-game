@@ -44,6 +44,8 @@ const useStyles = makeStyles((theme) => ({
     },
     levelComplete: {
         position: 'fixed',
+        top: '0px',
+        left: '0px',
         height: '100%',
         width: '100%',
         backgroundImage: 'url(/bg-winner/bg-winner.png)',
@@ -57,7 +59,7 @@ const Level:FunctionComponent<{id: number}> = ({id}) => {
     const {level, fetchLevel, moveItens, recipientIsComplete, recipientIsEmpty, finishLevel} = useLevelStore();
     const [selectedRecipient, setSelectedRecipient] = useState(-1);
     const [isFinished, setFinished] = useState(false);
-    
+
     useEffect(() => {
         fetchLevel(id);
     }, [id, fetchLevel]);
