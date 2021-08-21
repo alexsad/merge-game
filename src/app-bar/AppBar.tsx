@@ -16,7 +16,6 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-
 const AppBarComp:FunctionComponent = () => {
     const classes = useStyles();   
     const location = useLocation();

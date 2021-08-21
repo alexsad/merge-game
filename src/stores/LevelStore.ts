@@ -2,6 +2,11 @@ import create from 'zustand';
 import { ILevel } from '../interfaces/i-level';
 import { openDB } from 'idb/with-async-ittr.js';
 
+const calculateLevelEquivalence = (levelNumber: number) => {
+    const levelIncreaseFactor = levelNumber < 40 ? 2 : 1;
+    return parseInt(`${(levelNumber * levelIncreaseFactor) / 10}`) + 2;
+}
+
 const makeLevel = (combinations: number) => {
     const colors = [
         String.fromCodePoint(0x1F330), 
@@ -12,6 +17,7 @@ const makeLevel = (combinations: number) => {
         String.fromCodePoint(0x1F34A), 
         String.fromCodePoint(0x1F34B),
         String.fromCodePoint(0x1F95D),
+
         String.fromCodePoint(0x1F349),
         String.fromCodePoint(0x1F351),
         String.fromCodePoint(0x1F965),
@@ -108,12 +114,12 @@ export default create<{
             }
         }, level.levelNumber);
 
-        if(level.levelNumber < 151){
+        if(level.levelNumber < 160){
             const nextLevelNumber = level.levelNumber + 1;
             const createdLevelData = {
                 levelNumber: nextLevelNumber,
                 bestTime:0,
-                data: makeLevel(parseInt(`${nextLevelNumber/10}`) + 2)
+                data: makeLevel(calculateLevelEquivalence(nextLevelNumber))
             };
             (await dbPromise).put('levels', createdLevelData, nextLevelNumber);
         }
@@ -197,7 +203,7 @@ export default create<{
             const createdLevelData = {
                 levelNumber,
                 bestTime:0,
-                data: makeLevel(parseInt(`${levelNumber/10}`) + 2)
+                data: makeLevel(calculateLevelEquivalence(levelNumber))
             };
             (await dbPromise).put('levels', createdLevelData, levelNumber);
             set({
