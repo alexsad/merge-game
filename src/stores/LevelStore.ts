@@ -1,13 +1,12 @@
 import create from 'zustand';
 import { ILevel } from '../interfaces/i-level';
-import { openDB } from 'idb/with-async-ittr.js';
+import { getLevelConfig } from './LevelsStore';
+import openLevelStore from './idb-level-store';
 
-const calculateLevelEquivalence = (levelNumber: number) => {
-    const levelIncreaseFactor = levelNumber < 40 ? 2 : 1;
-    return parseInt(`${(levelNumber * levelIncreaseFactor) / 10}`) + 2;
-}
-
-const makeLevel = (combinations: number) => {
+const makeLevel = ({combinations, spaceSize}:{
+        combinations: number,
+        spaceSize: number
+    }) => {
     const colors = [
         String.fromCodePoint(0x1F330), 
         String.fromCodePoint(0x1F33D),
@@ -28,9 +27,8 @@ const makeLevel = (combinations: number) => {
         String.fromCodePoint(0x1F352),
         String.fromCodePoint(0x1F951)
     ];
-    const spaceSize = 4;
     const recepientMatrixTMP = new Array(combinations + 2);
-    recepientMatrixTMP.fill( new Array(4).fill( '' ));        
+    recepientMatrixTMP.fill( new Array(spaceSize).fill( '' ));        
     const recepientMatrix =  JSON.parse(JSON.stringify(recepientMatrixTMP));
     const getRandomIntInclusive = (pmin: number, pmax: number) => parseInt( `${(Math.random() * pmax) + pmin}` );
 
@@ -98,11 +96,7 @@ export default create<{
     finishLevel: async () => {
         const {level} = get();
 
-        const dbPromise = openDB('level-store', 1, {
-            upgrade(db) {
-              db.createObjectStore('levels');
-            },
-        });
+        const dbPromise = openLevelStore();
 
         const levelPromise = (await dbPromise).get('levels', level.levelNumber);
         const levelFromPromise = await levelPromise;
@@ -119,7 +113,7 @@ export default create<{
             const createdLevelData = {
                 levelNumber: nextLevelNumber,
                 bestTime:0,
-                data: makeLevel(calculateLevelEquivalence(nextLevelNumber))
+                data: makeLevel(getLevelConfig(nextLevelNumber))
             };
             (await dbPromise).put('levels', createdLevelData, nextLevelNumber);
         }
@@ -186,11 +180,7 @@ export default create<{
 
     },
     fetchLevel: async (levelNumber: number) => {
-        const dbPromise = openDB('level-store', 1, {
-            upgrade(db) {
-              db.createObjectStore('levels');
-            },
-        });
+        const dbPromise = openLevelStore();
 
         const levelPromise = (await dbPromise).get('levels', levelNumber);
         const level = await levelPromise;
@@ -203,7 +193,7 @@ export default create<{
             const createdLevelData = {
                 levelNumber,
                 bestTime:0,
-                data: makeLevel(calculateLevelEquivalence(levelNumber))
+                data: makeLevel(getLevelConfig(levelNumber))
             };
             (await dbPromise).put('levels', createdLevelData, levelNumber);
             set({

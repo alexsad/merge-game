@@ -22,7 +22,6 @@ const AppBarComp:FunctionComponent = () => {
     const history = useHistory();
     
     const reloadPage = () => {
-        console.log('loc:', location);
         history.push('/');
         setTimeout(() => {
             history.replace(location.pathname);

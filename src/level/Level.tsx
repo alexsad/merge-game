@@ -31,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
     finishedRecipient: {
         backgroundColor: 'rgba(22,255,115,.5)',
     },
-    containerGrid: {
-
+    cellWrapItem: {
+        padding: '0px 4px 0px 4px'
     },
     cellItem: {
         textAlign: 'center',
@@ -115,11 +115,11 @@ const Level:FunctionComponent<{id: number}> = ({id}) => {
             )}
             <Grid container className={classes.root} spacing={2}>
                 <Grid item xs={12}>
-                <Grid container justifyContent="center" className={classes.containerGrid} spacing={2}>
+                <Grid container justifyContent="center" spacing={2}>
                     {level.data.map((col, colIndex) => (
                         <List onClick={() => setSelectedRecipientHandler(colIndex)} className={ getRecipientClassName(colIndex, selectedRecipient) } component="nav" key={`recipient_${colIndex}`} aria-label="secondary mailbox folders">
                             {col.map((cell, cellIndex) => (
-                                <ListItem button key={`recipient_${cellIndex}`}>
+                                <ListItem button key={`recipient_${cellIndex}`} className={classes.cellWrapItem}>
                                     <ListItemText className={classes.cellItem}>
                                         <span className={classes.cellText}>{cell}</span>
                                     </ListItemText>
